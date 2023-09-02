@@ -1,0 +1,62 @@
+﻿@model RentCar_AspNetCore7.Controllers.HomeController.IndexViewModel
+
+@{
+    ViewData["Title"] = "CarsCityDate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Our For Rent Cars";
+    ViewData["Content"] = "Lorem ipsum dolor sit amet consectetur adipisicing elit.";
+}
+
+@section blockscover {
+    <partial name="~/Views/Home/Shared/_blocksover.cshtml" />
+}
+
+<div class="site-section bg-light">
+    <div class="container">
+        <div class="row">
+            @foreach (var car in Model.Cars)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="item-1">
+                        <a href="#"><img src="~/images/@car.Photo" alt="Image" class="img-fluid"></a>
+                        <div class="item-1-contents">
+                            <div class="text-center">
+                                <h3><a href="#">@car.Name</a></h3>
+                                <div class="rating">
+                                    <!-- You can add ratings here if your model supports it -->
+                                </div>
+                                <div class="rent-price"><span>$@car.PricePerDay/</span>day</div>
+                            </div>
+                            <ul class="specs">
+                                <li>
+                                    <span>Doors</span>
+                                    <span class="spec">@car.Doors</span>
+                                </li>
+                                <li>
+                                    <span>Seats</span>
+                                    <span class="spec">@car.Seats</span>
+                                </li>
+                                <li>
+                                    <span>Transmission</span>
+                                    <span class="spec">@car.Transmission</span>
+                                </li>
+                                <li>
+                                    <span>City</span>
+                                    <span class="spec">@car.City.Name</span>
+                                </li>
+                                <li>
+                                    <span>Year</span>
+                                    <span class="spec">@car.Year</span>
+                                </li>
+                            </ul>
+                            <div class="d-flex action">
+                                <a href="@Url.Action("Rent", "Home")" class="btn btn-primary">Rent Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

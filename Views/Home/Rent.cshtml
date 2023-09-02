@@ -1,0 +1,168 @@
+﻿@model RentCar_AspNetCore7.Models.Booking
+@{
+    ViewData["Title"] = "Rent";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Rent Car";
+    ViewData["Content"] = "Lorem ipsum dolor sit amet consectetur adipisicing elit.";
+}
+
+@section blockscover {
+    <partial name="~/Views/Home/Shared/_blocksover.cshtml" />
+}
+
+
+<div class="site-section bg-light" id="contact-section">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+      <div class="col-7 text-center mb-5">
+        <h2>Contact Us Or Use This Form To Rent A Car</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo assumenda, dolorum necessitatibus eius earum voluptates sed!</p>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col-lg-8 mb-5">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+                <form asp-action="Rent" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group row">
+                        <div class="col-md-6 mb-4 mb-lg-0">
+                            <input type="text" asp-for="FirstName" name="FirstName" class="form-control" placeholder="First name">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" asp-for="LastName" name="LastName" class="form-control" placeholder="Last name">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6 mb-4 mb-lg-0">
+                            <input type="email" asp-for="Email" name="Email" class="form-control" placeholder="Email">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="tel" asp-for="Phone" name="Phone" class="form-control" placeholder="Phone">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <select name="RentedCarId" asp-for="RentedCarId" class="form-control" id="RentedCar" onchange="setCityForSelectedCar()">
+                                @foreach (var car in ViewBag.Cars)
+                                {
+                                    <option value="@car.Id" data-city="@car.CityId" data-price="@car.PricePerDay">@car.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6 mb-4 mb-lg-0">
+                            <select name="RentalCityId" asp-for="RentalCityId" class="form-control" id="Rentalcity" onchange="setCityForSelectedCar()">
+                                @foreach (var city in ViewBag.Cities)
+                                {
+                                    <option value="@city.Id">@city.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <select name="DropoffCityId" asp-for="DropoffCityId" class="form-control" id="Dropoffcity">
+                                @foreach (var city in ViewBag.Cities)
+                                {
+                                    <option value="@city.Id">@city.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6 mb-4 mb-lg-0">
+                            <input type="date" asp-for="RentalStartDate" name="RentalStartDate" class="form-control" id="start_date" placeholder="Start date">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="date" asp-for="RentalEndDate" name="RentalEndDate" class="form-control" id="return_date" placeholder="Return date" onchange="calculateTotalPrice()">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-12" id="total_price">Total Price: $0</div>
+                        <input type="hidden" asp-for="TotalPrice" name="TotalPrice" id="total_price_input">
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 mr-auto">
+                            <input type="submit" class="btn btn-block btn-primary text-white py-3 px-5" value="Rent">
+                        </div>
+                    </div>
+                </form>
+
+
+            
+        </div>
+        <div class="col-lg-4 ml-auto">
+          <div class="bg-white p-3 p-md-5">
+            <h3 class="text-black mb-4">Contact Info</h3>
+            <ul class="list-unstyled footer-link">
+              <li class="d-block mb-3">
+                <span class="d-block text-black">Address:</span>
+                <span>34 Street Name, City Name Here, United States</span></li>
+              <li class="d-block mb-3"><span class="d-block text-black">Phone:</span><span>+1 242 4942 290</span></li>
+              <li class="d-block mb-3"><span class="d-block text-black">Email:</span><span>info@yourdomain.com</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+@section js {
+    <script>
+        window.onload = function () {
+            // Bugünün tarihini al
+            let today = new Date();
+            let dd = String(today.getDate()).padStart(2, '0');
+            let mm = String(today.getMonth() + 1).padStart(2, '0'); // Ocak ayı 0
+            let yyyy = today.getFullYear();
+
+            today = yyyy + '-' + mm + '-' + dd;
+
+            // Tarih alanlarını bugünün tarihi ile doldur
+            document.getElementById('start_date').value = today;
+            document.getElementById('return_date').value = today;
+        }
+        function calculateTotalPrice() {
+            let selectedCar = document.getElementById("RentedCar");
+            let dailyPrice = parseFloat(selectedCar.options[selectedCar.selectedIndex].getAttribute("data-price"));
+
+            let startDate = new Date(document.getElementById("start_date").value);
+            let endDate = new Date(document.getElementById("return_date").value);
+
+            if (endDate < startDate) {
+                alert("Return date can't be before the start date.");
+                return;
+            }
+
+            let differenceInTime = endDate.getTime() - startDate.getTime();
+            let differenceInDays = differenceInTime / (1000 * 3600 * 24);
+
+            let totalPrice = differenceInDays * dailyPrice;
+
+            document.getElementById("total_price").innerHTML = "Total Price: $" + totalPrice.toFixed(2);
+            document.getElementById("total_price_input").value = totalPrice.toFixed(2);
+        }
+
+        function setCityForSelectedCar() {
+            let selectedCar = document.getElementById("RentedCar");
+            let selectedCityId = selectedCar.options[selectedCar.selectedIndex].getAttribute("data-city");
+
+            let rentalCitySelect = document.getElementById("Rentalcity");
+            for (let i = 0; i < rentalCitySelect.options.length; i++) {
+                if (rentalCitySelect.options[i].value == selectedCityId) {
+                    rentalCitySelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    </script>
+}

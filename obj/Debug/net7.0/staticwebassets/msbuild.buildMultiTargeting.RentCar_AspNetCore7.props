@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\RentCar_AspNetCore7.props" />
+</Project>
